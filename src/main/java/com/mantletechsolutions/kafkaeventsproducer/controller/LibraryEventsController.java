@@ -20,7 +20,7 @@ public class LibraryEventsController {
 
 
     @PostMapping("/v1/libraryevent")
-    public ResponseEntity<?> postLibraryEvent(@RequestBody LibraryEvent libraryEvent) {
+    public ResponseEntity<LibraryEvent> postLibraryEvent(@RequestBody LibraryEvent libraryEvent) {
      log.info("libraryEvent : {}", libraryEvent);
         //invoke kafka producer
 
