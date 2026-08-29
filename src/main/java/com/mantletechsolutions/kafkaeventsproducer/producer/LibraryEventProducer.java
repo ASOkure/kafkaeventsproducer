@@ -2,6 +2,7 @@ package com.mantletechsolutions.kafkaeventsproducer.producer;
 
 import com.mantletechsolutions.kafkaeventsproducer.domain.LibraryEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -42,6 +43,24 @@ public class LibraryEventProducer {
                 });
     }
 
+
+    public CompletableFuture<SendResult<Integer, String>> sendLibraryEvent_Approach2(LibraryEvent libraryEvent) throws JsonProcessingException {
+
+        Integer key = libraryEvent.libraryEventId();
+        String value = objectMapper.writeValueAsString(libraryEvent);
+
+        ProducerRecord<Integer, String> producerRecord = buildProducerRecord(key, value, topic);
+        var completableFuture = kafkaTemplate.send(producerRecord);
+        return completableFuture
+                .whenComplete((sendResult, throwable) -> {
+                    if (throwable != null) {
+                        handleFailure(key, value, throwable);
+                    } else {
+                        handleSuccess(key, value, sendResult);
+
+                    }
+                });
+    }
     private void handleFailure(Integer key, String value, Throwable ex) {
         log.error("Error Sending the Message and the exception is {}", ex.getMessage());
 
