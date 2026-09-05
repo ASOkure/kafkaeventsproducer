@@ -1,6 +1,7 @@
 package com.mantletechsolutions.kafkaeventsproducer.controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mantletechsolutions.kafkaeventsproducer.domain.LibraryEvent;
 import com.mantletechsolutions.kafkaeventsproducer.domain.LibraryEventType;
 import com.mantletechsolutions.kafkaeventsproducer.producer.LibraryEventProducer;

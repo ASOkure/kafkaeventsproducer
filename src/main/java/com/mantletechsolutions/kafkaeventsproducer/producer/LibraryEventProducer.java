@@ -1,8 +1,11 @@
 package com.mantletechsolutions.kafkaeventsproducer.producer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mantletechsolutions.kafkaeventsproducer.domain.LibraryEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Component
@@ -61,6 +65,16 @@ public class LibraryEventProducer {
                     }
                 });
     }
+
+
+    private ProducerRecord<Integer, String> buildProducerRecord(Integer key, String value, String topic) {
+
+
+        List<Header> recordHeaders = List.of(new RecordHeader("event-source", "scanner".getBytes()));
+
+        return new ProducerRecord<>(topic, null, key, value, recordHeaders);
+    }
+
     private void handleFailure(Integer key, String value, Throwable ex) {
         log.error("Error Sending the Message and the exception is {}", ex.getMessage());
 
