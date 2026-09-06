@@ -65,7 +65,23 @@ public class LibraryEventProducer {
                     }
                 });
     }
+    public CompletableFuture<SendResult<Integer, String>> sendLibraryEvent_Approach2(LibraryEvent libraryEvent) throws JsonProcessingException {
 
+        Integer key = libraryEvent.libraryEventId();
+        String value = objectMapper.writeValueAsString(libraryEvent);
+
+        ProducerRecord<Integer, String> producerRecord = buildProducerRecord(key, value, topic);
+        var completableFuture = kafkaTemplate.send(producerRecord);
+        return completableFuture
+                .whenComplete((sendResult, throwable) -> {
+                    if (throwable != null) {
+                        handleFailure(key, value, throwable);
+                    } else {
+                        handleSuccess(key, value, sendResult);
+
+                    }
+                });
+    }
 
     private ProducerRecord<Integer, String> buildProducerRecord(Integer key, String value, String topic) {
 
